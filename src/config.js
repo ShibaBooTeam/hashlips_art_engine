@@ -37,6 +37,29 @@ const layerConfigurations = [
   },
 ];
 
+const excludedCombinations = [
+  [
+    {
+      trait_type: "Background",
+      value: "Black",
+    },
+    {
+      trait_type: "Eyeball",
+      value: "White",
+    },
+  ],
+  [
+    {
+      trait_type: "Iris",
+      value: "Large",
+    },
+    {
+      trait_type: "Top lid",
+      value: "High",
+    },
+  ],
+];
+
 const shuffleLayerConfigurations = false;
 
 const debugLogs = false;
@@ -107,6 +130,7 @@ module.exports = {
   background,
   uniqueDnaTorrance,
   layerConfigurations,
+  excludedCombinations,
   rarityDelimiter,
   preview,
   shuffleLayerConfigurations,

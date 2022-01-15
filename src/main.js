@@ -12,6 +12,7 @@ const {
   background,
   uniqueDnaTorrance,
   layerConfigurations,
+  excludedCombinations,
   rarityDelimiter,
   shuffleLayerConfigurations,
   debugLogs,
@@ -355,6 +356,20 @@ const startCreating = async () => {
       let newDna = createDna(layers);
       if (isDnaUnique(dnaList, newDna)) {
         let results = constructLayerToDna(newDna, layers);
+        if (isExcludedCombinations(results)) {
+          console.log("This is excluded combinations");
+          failedCount++;
+          if (failedCount >= uniqueDnaTorrance) {
+            console.log(
+              `You need more layers or elements to grow your edition to ${layerConfigurations[layerConfigIndex].growEditionSizeTo} artworks!`
+            );
+            process.exit();
+          }
+          continue;
+        }
+        console.log(
+          `is excluded combination: ${isExcludedCombinations(results)}`
+        );
         let loadedElements = [];
 
         results.forEach((layer) => {
@@ -420,6 +435,30 @@ const startCreating = async () => {
     layerConfigIndex++;
   }
   writeMetaData(JSON.stringify(metadataList, null, 2));
+};
+
+const isExcludedCombinations = (results) => {
+  const combination = results.map((result) => {
+    return { trait_type: result.name, value: result.selectedElement.name };
+  });
+  const isExcluded = excludedCombinations.some((excluded) =>
+    excluded.every((trait) => combination.some((t) => shallowEqual(t, trait)))
+  );
+  return isExcluded;
+};
+
+const shallowEqual = (object1, object2) => {
+  const keys1 = Object.keys(object1);
+  const keys2 = Object.keys(object2);
+  if (keys1.length !== keys2.length) {
+    return false;
+  }
+  for (let key of keys1) {
+    if (object1[key] !== object2[key]) {
+      return false;
+    }
+  }
+  return true;
 };
 
 module.exports = { startCreating, buildSetup, getElements };
