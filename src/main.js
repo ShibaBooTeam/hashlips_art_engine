@@ -13,6 +13,7 @@ const {
   uniqueDnaTorrance,
   layerConfigurations,
   excludedCombinations,
+  mustHaveCombinations,
   rarityDelimiter,
   shuffleLayerConfigurations,
   debugLogs,
@@ -353,9 +354,21 @@ const startCreating = async () => {
     while (
       editionCount <= layerConfigurations[layerConfigIndex].growEditionSizeTo
     ) {
-      let newDna = createDna(layers);
+      var newDna;
+      if (mustHaveCombinations.length > 0) {
+        newDna = createDnaForMustHave(layers, mustHaveCombinations.shift());
+        console.log("create dna for must have combination: ", newDna);
+      } else {
+        newDna = createDna(layers);
+        console.log("create dna: ", newDna);
+      }
+      // let newDna = createDna(layers);
+      // console.log(createDnaForMustHave(layers, mustHaveCombinations[0])); // TODO: implement
       if (isDnaUnique(dnaList, newDna)) {
         let results = constructLayerToDna(newDna, layers);
+        // console.log("=======================");
+        // console.log(results);
+        // console.log("=======================");
         if (isExcludedCombinations(results)) {
           console.log("This is excluded combinations");
           failedCount++;
@@ -459,6 +472,42 @@ const shallowEqual = (object1, object2) => {
     }
   }
   return true;
+};
+
+const createDnaForMustHave = (_layers, _mustHaveCombination) => {
+  let randNum = [];
+  _layers.forEach((layer) => {
+    // console.log(layer.name, _mustHaveCombination.filter((trait) => trait.trait_type === layer.name));
+    const mustHaveTrait = _mustHaveCombination.filter((trait) => trait.trait_type === layer.name);
+    if (mustHaveTrait.length > 0) {
+      const trait = mustHaveTrait[0];
+      const element = layer.elements.filter((e) => e.name === trait.value)[0];
+      // console.log(element);
+      return randNum.push(
+        `${element.id}:${element.filename}${
+          layer.bypassDNA ? "?bypassDNA=true" : ""
+        }`
+      );
+    }
+    var totalWeight = 0;
+    layer.elements.forEach((element) => {
+      totalWeight += element.weight;
+    });
+    // number between 0 - totalWeight
+    let random = Math.floor(Math.random() * totalWeight);
+    for (var i = 0; i < layer.elements.length; i++) {
+      // subtract the current weight from the random weight until we reach a sub zero value.
+      random -= layer.elements[i].weight;
+      if (random < 0) {
+        return randNum.push(
+          `${layer.elements[i].id}:${layer.elements[i].filename}${
+            layer.bypassDNA ? "?bypassDNA=true" : ""
+          }`
+        );
+      }
+    }
+  });
+  return randNum.join(DNA_DELIMITER);
 };
 
 module.exports = { startCreating, buildSetup, getElements };

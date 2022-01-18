@@ -47,17 +47,24 @@ const excludedCombinations = [
       trait_type: "Eyeball",
       value: "White",
     },
-  ],
+  ]
+];
+
+const mustHaveCombinations = [
   [
+    {
+      trait_type: "Eye color",
+      value: "Red",
+    },
+    {
+      trait_type: "Eyeball",
+      value: "Red",
+    },
     {
       trait_type: "Iris",
       value: "Large",
-    },
-    {
-      trait_type: "Top lid",
-      value: "High",
-    },
-  ],
+    }
+  ]
 ];
 
 const shuffleLayerConfigurations = false;
@@ -131,6 +138,7 @@ module.exports = {
   uniqueDnaTorrance,
   layerConfigurations,
   excludedCombinations,
+  mustHaveCombinations,
   rarityDelimiter,
   preview,
   shuffleLayerConfigurations,
