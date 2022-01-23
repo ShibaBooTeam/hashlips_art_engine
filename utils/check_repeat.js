@@ -39,7 +39,7 @@ const main = () => {
 
     // 2. read json file
     let attributes = [];
-    for (let i = 1; i <= noOfFiles; i++) {
+    for (let i = 0; i < noOfFiles; i++) {
         console.log(`reading attributes ${i}/${noOfFiles}`);
         attributes.push({id: i, attributes: getAttributes(i)});
     }
